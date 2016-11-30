@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ruleset name="PHP_CodeSniffer">
+	<description>The coding standard for this project.</description>
+	<file>libs</file>
+	<file>tests</file>
+
+	<arg value="np" />
+
+	<!-- Based on -->
+	<rule ref="vendor/tacoberu/phpcs-coding-standard/src/TacoCodingStandard">
+		<exclude name="ZenifyCodingStandard.Scope.MethodScope"/>
+	</rule>
+
+</ruleset>
