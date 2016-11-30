@@ -1,0 +1,36 @@
+{
+	"name": "tacoberu/nette-slidee",
+	"type": "library",
+	"description": "Simple pages for Nette.",
+	"keywords": ["webpage", "nette"],
+	"homepage": "https://github.com/tacoberu/nette-slidee",
+	"license": "MIT",
+	"authors": [
+		{ "name": "Martin Takáč", "homepage": "http://martin.takac.name", "email": "martin@takac.name" }
+	],
+	"support": {
+		"issues": "https://github.com/tacoberu/nette-slidee/issues"
+	},
+	"require": {
+		"php": ">=5.5"
+	},
+	"require-dev": {
+		"tracy/tracy": "^2.3",
+		"nette/utils": "^2.3",
+		"phpunit/phpunit": "^4",
+		"mikey179/vfsStream": "^1.6",
+		"tacoberu/phpcs-coding-standard": "@dev",
+		"sstalle/php7cc": "^1.1"
+	},
+	"repositories": [
+		{	"type": "vcs", "url": "git://github.com/tacoberu/phpcs-coding-standard" }
+	],
+	"autoload": {
+		"psr-4": {"Taco\\Nette\\Slidee\\": "libs/"}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Taco\\Nette\\Slidee\\": "tests"
+		}
+	}
+}
