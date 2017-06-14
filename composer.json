@@ -12,7 +12,8 @@
 		"issues": "https://github.com/tacoberu/nette-slidee/issues"
 	},
 	"require": {
-		"php": ">=5.5"
+		"php": ">=5.3",
+		"nette/application": "2.3.*"
 	},
 	"require-dev": {
 		"tracy/tracy": "^2.3",
@@ -20,7 +21,8 @@
 		"phpunit/phpunit": "^4",
 		"mikey179/vfsStream": "^1.6",
 		"tacoberu/phpcs-coding-standard": "@dev",
-		"sstalle/php7cc": "^1.1"
+		"sstalle/php7cc": "^1.1",
+		"phpmd/phpmd": "^2.5"
 	},
 	"repositories": [
 		{	"type": "vcs", "url": "git://github.com/tacoberu/phpcs-coding-standard" }
