@@ -1,0 +1,4 @@
+tracy:
+	maxDepth: 7
+	maxLen: 200
+	showLocation: true

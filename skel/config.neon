@@ -1,0 +1,16 @@
+php:
+	date.timezone: Europe/Prague
+
+application:
+	scanDirs: false
+
+services:
+#	- App\Controls\ContactFormFactory
+
+extensions:
+	slidee: Taco\Nette\Slidee\Extension
+
+slidee:
+	pagesDir: %wwwDir%/../app/pages
+	bare: true # false with own presenter
+	# presenter: ContainerPresenter # Name of own presenter with data and components.

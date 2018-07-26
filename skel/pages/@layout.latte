@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+	<meta charset="utf-8" />
+	<meta name="author" content="Martin Takáč; http://martin.takac.name" />
+	<meta name="description" content="{block description|striptags|trim}Sledee description{/block}"/>
+	<meta name="robots" content="index,follow" />
+
+	<title>{block title|striptags|trim}Sledee{/block}</title>
+
+	<link rel="stylesheet" media="screen,projection,tv" href="{$basePath}/css/screen.css?v=7" type="text/css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<link rel="shortcut icon" href="{$basePath}/favicon.ico" />
+	<link rel="icon" href="{$basePath}/favicon.png" type="image/png" />
+	<link rel="apple-touch-icon" href="{$basePath}/apple-touch-icon.png" />
+</head>
+
+<body>
+	<h1>It's works</h1>
+
+
+	<div n:foreach="$flashes as $flash" class="flash {$flash->type}">{$flash->message}</div>
+
+	{include content}
+
+{*
+	<ul>
+		<li n:foreach="$control->langs as $lang">{$lang->name}</li>
+	</ul>
+*}
+
+	<div class="copyright">
+		<p>&copy; 2018 by Martin Takáč</p>
+	</div>
+
+	<script type="text/javascript" src="{$basePath}/js/main.js?v=6"></script>
+</body>
+</html>
