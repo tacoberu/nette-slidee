@@ -7,6 +7,7 @@
 namespace Taco\Nette\Slidee;
 
 use Nette;
+use Nette\Schema\Expect;
 use Nette\DI\CompilerExtension;
 
 
@@ -16,45 +17,48 @@ use Nette\DI\CompilerExtension;
 final class Extension extends CompilerExtension
 {
 
-	/**
-	 * Default configuration.
-	 * @var array
-	 */
-	private $defaults = [
-		'pagesDir' => '%appDir%/pages',
-		'tempDir' => '%tempDir%',
-		'presenter' => 'Page',
-		'bare' => true,
-	];
+	private string $appDir;
+	private string $tempDir;
+
+
+	function __construct(string $appDir, string $tempDir)
+	{
+		$this->appDir = $appDir;
+		$this->tempDir = $tempDir;
+	}
+
+
+
+	function getConfigSchema(): Nette\Schema\Schema
+	{
+		return Expect::structure([
+			'pagesDir' => Expect::string()->default($this->appDir . '/pages'),
+			'tempDir' => Expect::string()->default($this->tempDir),
+			'presenter' => Expect::string()->default('Page'),
+			'bare' => Expect::bool()->default(True),
+		]);
+	}
+
 
 
 	function loadConfiguration()
 	{
-		$config = $this->getConfig();
 		$builder = $this->getContainerBuilder();
-		$builder->parameters['pagesDir'] = $config['pagesDir'];
-	}
-
-
-
-	function beforeCompile()
-	{
-		$config = $this->getConfig($this->defaults);
-
-		$builder = $this->getContainerBuilder();
-		$builder->getDefinition('router')
-			->setClass(TemplateRouter::class, [
-				$config['pagesDir'],
-				$config['tempDir'],
-				$config['presenter']
+		$builder->addDefinition('router')
+			->setCreator(TemplateRouter::class, [
+				$this->config->pagesDir,
+				$this->config->tempDir,
+				$this->config->presenter
 			]);
-
-		if ($config['bare']) {
-			$builder->getDefinition($builder->getByType(Nette\Application\IPresenterFactory::class))->addSetup(
-				'setMapping',
-				[['*' => 'Taco\Nette\Slidee\*Presenter']]
-			);
-		}
+		$builder->getDefinition($builder->getByType(Nette\Application\IPresenterFactory::class))->addSetup(
+			'setMapping',
+			[['*' => 'Taco\Nette\Slidee\*Presenter']]
+		);
+		$builder->addDefinition($this->prefix('slider'))
+			->setCreator(PagePresenter::class, [
+				$this->config->pagesDir
+			]);
 	}
+
 
 }

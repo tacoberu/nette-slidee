@@ -9,7 +9,7 @@ services:
 	contactForm: App\Controls\ContactFormFactory # Use own control as {control contactForm}
 
 extensions:
-	slidee: Taco\Nette\Slidee\Extension
+	slidee: Taco\Nette\Slidee\Extension(%wwwDir%/../app, %tempDir%)
 
 slidee:
 	pagesDir: %wwwDir%/../app/pages

@@ -19,13 +19,13 @@
 		"issues": "https://github.com/tacoberu/nette-slidee/issues"
 	},
 	"require": {
-		"php": ">=7.1 <8.0",
-		"nette/application": "^2.3",
-		"nette/bootstrap": "^2.3",
-		"nette/di": ">=2.4.16",
+		"php": ">=8.0 <8.5",
+		"nette/application": "^3.1",
+		"nette/bootstrap": "^3.1",
+		"nette/di": ">=3.0",
 		"nette/utils": ">=2.5.7",
-		"tracy/tracy": "^2.3",
-		"latte/latte": "^2.3"
+		"tracy/tracy": ">=2.4",
+		"latte/latte": ">=2.4"
 	},
 	"autoload": {
 		"psr-4": {

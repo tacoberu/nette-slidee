@@ -8,6 +8,12 @@ namespace Taco\Nette\Slidee;
 
 use Latte\Engine;
 use Latte\Macros;
+use Latte\Compiler\Tag;
+use Latte\Compiler\PrintContext;
+use Latte\Compiler\Nodes\StatementNode;
+use Latte\Compiler\Nodes\Php\Scalar\StringNode;
+use Latte\Compiler\Nodes\Php\Expression\ArrayNode;
+use Latte\Compiler\Nodes\Php\ArrayItemNode;
 use Nette;
 use Nette\Application\Routers;
 use Nette\Application\UI\ITemplateFactory;
@@ -22,13 +28,7 @@ use Nette\Utils\Strings;
 class TemplateRouter extends Routers\RouteList
 {
 
-	/**
-	 * @param string $path
-	 * @param string $cachePath
-	 * @param string $presenterName
-	 * @param ITemplateFactory $templateFactory
-	 */
-	function __construct($path, $cachePath, $presenterName, ITemplateFactory $templateFactory)
+	function __construct(string $path, string $cachePath, string $presenterName, ITemplateFactory $templateFactory)
 	{
 		$template = $templateFactory->createTemplate();
 
@@ -41,31 +41,38 @@ class TemplateRouter extends Routers\RouteList
 		}
 
 		foreach ($routes as $mask => $file) {
-			// No, krapet dost zbastlené, ale za účelem prototypu...
-			// Možná vlastní router?
 			$this[] = new Routers\Route($mask, $presenterName . ':' . self::uniq($path, $file));
 		}
 	}
 
 
 
-	/**
-	 * @param string
-	 */
-	private function scanRoutes(Engine $latte, $path)
+	private function scanRoutes(Engine $latte, $path): array
 	{
-		$routes = [];
-		$macroSet = new Macros\MacroSet($latte->getCompiler());
-		$macroSet->addMacro('url', function ($node) use (&$routes, &$file) {
-			$routes[$node->args] = (string) $file;
-		}/*, NULL, NULL, $macroSet::ALLOWED_IN_HEAD*/);
+		$routes = new \ArrayObject;
 
-		// Prohledat šablony.
-		foreach (Nette\Utils\Finder::findFiles('*.latte')->from($path) as $file) {
-			$latte->compile($file);
+		// inicializace Latte 2
+		if (version_compare(Engine::VERSION, '3', '<')) {
+			$macroSet = new Macros\MacroSet($latte->getCompiler());
+			$macroSet->addMacro('url', function ($node) use (&$routes, &$file) {
+				$routes[$node->args] = (string) $file;
+			}/*, NULL, NULL, $macroSet::ALLOWED_IN_HEAD*/);
+			// Prohledat šablony.
+			foreach (Nette\Utils\Finder::findFiles('*.latte')->from($path) as $file) {
+				$latte->compile($file);
+			}
 		}
-
-		return $routes;
+		// inicializace Latte 3
+		else {
+			$ext = new SlideExtension($routes);
+			$latte->addExtension($ext);
+			// Prohledat šablony.
+			foreach (Nette\Utils\Finder::findFiles('*.latte')->from($path) as $file) {
+				$ext->setCurrentFile($file); // abych věděl kde šablonu hledat
+				$latte->compile($file);
+			}
+		}
+		return (array) $routes;
 	}
 
 
@@ -73,7 +80,7 @@ class TemplateRouter extends Routers\RouteList
 	/**
 	 * Odstranění z cesty souboru již známou $path.
 	 */
-	private static function uniq($path, $file)
+	private static function uniq(string $path, string $file): string
 	{
 		if ( ! Strings::startsWith($file, $path)) {
 			return $file;
@@ -83,9 +90,94 @@ class TemplateRouter extends Routers\RouteList
 
 
 
-	private static function camelCase($str)
+	private static function camelCase(string $str): string
 	{
 		return lcfirst(strtr(Strings::capitalize(strtr($str, '-', ' ')), [' ' => '']));
 	}
 
+}
+
+
+
+/**
+ * {url contact-me}
+ */
+class SlideExtension extends \Latte\Extension
+{
+	private $routes;
+	private $currentFile;
+
+
+	function __construct($routes)
+	{
+		$this->routes = $routes;
+	}
+
+
+
+	function setCurrentFile($file)
+	{
+		$this->currentFile = $file;
+	}
+
+
+	function getTags(): array
+	{
+		return [
+			'url' => function($tag) {
+				return new UrlNode($tag, $this->routes, $this->currentFile);
+			},
+		];
+	}
+}
+
+
+
+class UrlNode extends StatementNode
+{
+	public $subject;
+
+
+	function __construct(Tag $tag, $routes, $currentFile)
+	{
+		$this->subject = $tag->parser->parseUnquotedStringOrExpression();
+		$routes[self::format($this->subject)] = (string) $currentFile;
+	}
+
+
+
+	function print(PrintContext $context): string
+	{
+		return '';
+	}
+
+
+
+	function &getIterator(): \Generator
+	{
+		yield $this->subject;
+	}
+
+
+
+	private static function format($src): string
+	{
+		switch(true) {
+			case $src instanceof StringNode:
+				return $src->value;
+
+			case $src instanceof ArrayItemNode:
+				return self::format($src->value);
+
+			case $src instanceof ArrayNode:
+				$xs = [];
+				foreach ($src as $x) {
+					$xs[] = self::format($x);
+				}
+				return '[' . implode(', ', $xs) . ']';
+
+			default:
+				throw new \LogicException("Unsupported type of url.");
+		}
+	}
 }

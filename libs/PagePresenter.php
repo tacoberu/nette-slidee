@@ -8,6 +8,7 @@ namespace Taco\Nette\Slidee;
 
 use Latte;
 use Nette\Application\UI;
+use Nette\ComponentModel\IComponent;
 use Nette\Utils\Strings;
 
 
@@ -18,21 +19,32 @@ use Nette\Utils\Strings;
  */
 class PagePresenter extends UI\Presenter
 {
+	private string $pagesDir;
+
+	function __construct(string $pagesDir)
+	{
+		$this->pagesDir = $pagesDir;
+	}
 
 
 	/**
 	 * Template factory.
-	 * @param  string
-	 * @return Application\UI\ITemplate
 	 */
-	function createTemplate($class = NULL, callable $latteFactory = NULL)
+	function createTemplate($class = NULL, callable $latteFactory = NULL): UI\ITemplate
 	{
 		$template = $this->getTemplateFactory()->createTemplate($this);
 
 		// Macro {url ...}
+		// inicializace Latte 2
 		$latte = $template->getLatte();
-		$macroSet = new Latte\Macros\MacroSet($latte->getCompiler());
-		$macroSet->addMacro('url', function () {}/*, NULL, NULL, $macroSet::ALLOWED_IN_HEAD*/); // ignore
+		if (version_compare($latte::VERSION, '3', '<')) {
+			$macroSet = new Latte\Macros\MacroSet($latte->getCompiler());
+			$macroSet->addMacro('url', function () {}/*, NULL, NULL, $macroSet::ALLOWED_IN_HEAD*/); // ignore
+		}
+		// inicializace Latte 3
+		else {
+			$latte->addExtension(new SlideExtension([]));
+		}
 
 		$params = $this->request->getParameters();
 		$template->presenter = $this;
@@ -59,7 +71,7 @@ class PagePresenter extends UI\Presenter
 
 
 
-	protected function createComponent($name)
+	protected function createComponent(string $name): ?IComponent
 	{
 		if ( ! $this->context->hasService($name)) {
 			return Null;
@@ -70,17 +82,14 @@ class PagePresenter extends UI\Presenter
 
 
 
-	/**
-	 * @return string
-	 */
-	private function getPagesDir()
+	private function getPagesDir(): string
 	{
-		return $this->context->parameters['pagesDir'];
+		return $this->pagesDir;
 	}
 
 
 
-	private static function actionToFilename($str)
+	private static function actionToFilename(string $str): string
 	{
 		return strtolower(Strings::replace($str, '~([A-Z])~', '-$1'));
 	}
