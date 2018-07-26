@@ -11,3 +11,13 @@ It is more simply, one webpage is one template.
 But when you need, you can add whatever: components, servises, and all those timey wimey stuff by useing DI container.
 
 
+## Usage
+
+	composer require tacoberu/nette-slidee
+	mkdir app
+	cp -r vendor/tacoberu/nette-slidee/skel/* app
+	mkdir document_root
+	mv app/index.php document_root/
+	mkdir -m 0777 -p var/log
+	mkdir -m 0777 temp
+	php -S localhost:8001 -t document_root
