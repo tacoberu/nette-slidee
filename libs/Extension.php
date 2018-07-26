@@ -23,7 +23,8 @@ final class Extension extends CompilerExtension
 	private $defaults = [
 		'pagesDir' => '%appDir%/pages',
 		'tempDir' => '%tempDir%',
-		'presenter' => 'Container'
+		'presenter' => 'Page',
+		'bare' => False,
 	];
 
 
@@ -39,6 +40,7 @@ final class Extension extends CompilerExtension
 	function beforeCompile()
 	{
 		$config = $this->getConfig($this->defaults);
+
 		$builder = $this->getContainerBuilder();
 		$builder->getDefinition('router')
 			->setClass('Taco\Nette\Slidee\TemplateRouter', [
@@ -46,6 +48,13 @@ final class Extension extends CompilerExtension
 				$config['tempDir'],
 				$config['presenter']
 			]);
+
+		if ($config['bare']) {
+			$builder->getDefinition($builder->getByType(Nette\Application\IPresenterFactory::class))->addSetup(
+				'setMapping',
+				[['*' => 'Taco\Nette\Slidee\*Presenter']]
+			);
+		}
 	}
 
 }
