@@ -78,7 +78,14 @@ class TemplateRouter extends Routers\RouteList
 		if ( ! Strings::startsWith($file, $path)) {
 			return $file;
 		}
-		return substr(substr($file, strlen($path) + 1), 0, -6); // .latte
+		return self::camelCase(substr(substr($file, strlen($path) + 1), 0, -6)); // .latte
+	}
+
+
+
+	private static function camelCase($str)
+	{
+		return lcfirst(strtr(Strings::capitalize(strtr($str, '-', ' ')), [' ' => '']));
 	}
 
 }
