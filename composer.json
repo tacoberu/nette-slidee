@@ -19,33 +19,17 @@
 		"issues": "https://github.com/tacoberu/nette-slidee/issues"
 	},
 	"require": {
+		"php": ">=7.1 <8.0",
 		"nette/application": "^2.3",
 		"nette/bootstrap": "^2.3",
-		"nette/utils": ">=2.3 <2.5",
+		"nette/di": ">=2.4.16",
+		"nette/utils": ">=2.5.7",
 		"tracy/tracy": "^2.3",
 		"latte/latte": "^2.3"
 	},
-	"require-dev": {
-		"phpunit/phpunit": "^4",
-		"mikey179/vfsStream": "^1.6",
-		"tacoberu/phpcs-coding-standard": "@dev",
-		"sstalle/php7cc": "^1.1",
-		"phpmd/phpmd": "^2.5"
-	},
-	"repositories": [
-		{
-			"type": "vcs",
-			"url": "git://github.com/tacoberu/phpcs-coding-standard"
-		}
-	],
 	"autoload": {
 		"psr-4": {
 			"Taco\\Nette\\Slidee\\": "libs/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Taco\\Nette\\Slidee\\": "tests"
 		}
 	}
 }
