@@ -19,16 +19,6 @@ use Nette\Utils\Strings;
 class PagePresenter extends UI\Presenter
 {
 
-	/**
-	 * Changes current action. Only alphanumeric characters are allowed.
-	 * @param  string
-	 * @return void
-	 */
-	function changeAction($action)
-	{
-	}
-
-
 
 	/**
 	 * Template factory.
@@ -48,7 +38,7 @@ class PagePresenter extends UI\Presenter
 		$template->presenter = $this;
 		$template->context = $this->context;
 
-		$file = $params['action'];
+		$file = self::actionToFilename($params['action']);
 		if ($file[0] !== '/') {
 			$file = $this->getPagesDir() . DIRECTORY_SEPARATOR . $file;
 			if ( ! Strings::endsWith($file, '.latte')) {
@@ -57,8 +47,6 @@ class PagePresenter extends UI\Presenter
 		}
 
 		$template->setFile($file);
-		$params['action'] = 'default';
-		$template->setParameters($params);
 
 		if ($this->getHttpRequest()) {
 			$url = $this->getHttpRequest()->getUrl();
@@ -77,6 +65,13 @@ class PagePresenter extends UI\Presenter
 	private function getPagesDir()
 	{
 		return $this->context->parameters['pagesDir'];
+	}
+
+
+
+	private static function actionToFilename($str)
+	{
+		return strtolower(Strings::replace($str, '~([A-Z])~', '-$1'));
 	}
 
 }
