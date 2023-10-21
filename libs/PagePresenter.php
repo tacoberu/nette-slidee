@@ -49,7 +49,7 @@ class PagePresenter extends UI\Presenter
 		$template->context = $this->context;
 
 		$file = $params['action'];
-		if ($file{0} !== '/') {
+		if ($file[0] !== '/') {
 			$file = $this->getPagesDir() . DIRECTORY_SEPARATOR . $file;
 			if ( ! Strings::endsWith($file, '.latte')) {
 				$file .= '.latte';
