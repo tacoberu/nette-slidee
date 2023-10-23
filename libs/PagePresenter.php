@@ -59,6 +59,17 @@ class PagePresenter extends UI\Presenter
 
 
 
+	protected function createComponent($name)
+	{
+		if ( ! $this->context->hasService($name)) {
+			return Null;
+		}
+		return $this->context->getService($name)
+			->create($this, $name);
+	}
+
+
+
 	/**
 	 * @return string
 	 */
