@@ -5,12 +5,13 @@ application:
 	scanDirs: false
 
 services:
-#	- App\Controls\ContactFormFactory
+	- App\Controls\ContactFormModel
+	contactForm: App\Controls\ContactFormFactory # Use own control as {control contactForm}
 
 extensions:
 	slidee: Taco\Nette\Slidee\Extension
 
 slidee:
 	pagesDir: %wwwDir%/../app/pages
-	bare: true # false with own presenter
+	# bare: true # false with own presenter
 	# presenter: ContainerPresenter # Name of own presenter with data and components.
